@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Pilot — AI Ticket Classifier</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 1.25rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Flash Messages */
+        .flash-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .flash {
+            padding: 0.85rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .flash.success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .flash.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* KPI Summary Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.1rem 1.25rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .stat-card .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 0.25rem;
+        }
+
+        .stat-card.critical .value {
+            color: var(--danger);
+        }
+
+        /* Forms Layout */
+        .forms-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .forms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .card h2 {
+            font-size: 1.15rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: #ffffff;
+            color: var(--text-main);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.65rem 1.25rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.15s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background-color: #ffffff;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: #eff6ff;
+        }
+
+        .btn-danger {
+            background-color: #fee2e2;
+            color: var(--danger);
+            padding: 0.35rem 0.65rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-danger:hover {
+            background-color: #fecaca;
+        }
+
+        /* Filter & Search Bar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .filter-form input[type="text"] {
+            max-width: 280px;
+        }
+
+        .filter-form select {
+            width: auto;
+            min-width: 140px;
+        }
+
+        /* Ticket Table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.8rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #eff6ff;
+            color: var(--primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .priority-P1 { background: #fee2e2; color: #991b1b; }
+        .priority-P2 { background: #ffedd5; color: #9a3412; }
+        .priority-P3 { background: #fef9c3; color: #854d0e; }
+        .priority-P4 { background: #e0f2fe; color: #075985; }
+
+        .status-select {
+            padding: 0.3rem 0.5rem;
+            font-size: 0.85rem;
+            width: auto;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        .subtext {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Support Pilot</h1>
+    <p>AI-Powered IT Ticket Classification &amp; Triage Dashboard</p>
+</header>
+
+<div class="container">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-list">
+                {% for category, message in messages %}
+                    <li class="flash {{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- KPI Summary Metrics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="label">Total Tickets</div>
+            <div class="value">{{ stats.total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Open</div>
+            <div class="value">{{ stats.open }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">In Progress</div>
+            <div class="value">{{ stats.in_progress }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Resolved</div>
+            <div class="value">{{ stats.resolved }}</div>
+        </div>
+        <div class="stat-card critical">
+            <div class="label">Active P1 Critical</div>
+            <div class="value">{{ stats.critical_active }}</div>
+        </div>
+    </div>
+
+    <!-- Submission Forms -->
+    <div class="forms-grid">
+        <!-- Single Ticket Submission -->
+        <div class="card">
+            <h2>Submit New Ticket</h2>
+            <form method="POST" action="{{ url_for('submit') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="employee_name">Employee Name</label>
+                        <input type="text" id="employee_name" name="employee_name" placeholder="Jane Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="jane@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" name="department" placeholder="Finance" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="title">Issue Title</label>
+                    <input type="text" id="title" name="title" placeholder="VPN disconnects every 5 minutes" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Describe the issue in detail..." required></textarea>
+                </div>
+                <button type="submit" class="btn">Classify &amp; Submit Ticket</button>
+            </form>
+        </div>
+
+        <!-- Bulk CSV Upload -->
+        <div class="card">
+            <h2>Bulk CSV Import</h2>
+            <p class="subtext" style="margin-bottom: 1rem;">
+                Upload a CSV containing columns:<br>
+                <strong>Employee Name, Email, Department, Title, Description</strong>
+            </p>
+            <form method="POST" action="{{ url_for('upload_csv') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="csv_file">Select CSV File</label>
+                    <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <button type="submit" class="btn">Upload &amp; Process CSV</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Queue -->
+    <div class="card">
+        <h2>Ticket Queue</h2>
+
+        <div class="toolbar">
+            <form method="GET" action="{{ url_for('index') }}" class="filter-form">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search title, employee, category...">
+                <select name="status">
+                    <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All Statuses</option>
+                    {% for s in valid_statuses %}
+                        <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+                <select name="priority">
+                    <option value="All" {% if priority_filter == 'All' %}selected{% endif %}>All Priorities</option>
+                    {% for p in ['P1', 'P2', 'P3', 'P4'] %}
+                        <option value="{{ p }}" {% if priority_filter == p %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn">Apply</button>
+                {% if status_filter != 'All' or priority_filter != 'All' or search_query %}
+                    <a href="{{ url_for('index') }}" class="btn btn-outline">Reset</a>
+                {% endif %}
+            </form>
+
+            <a href="{{ url_for('export_csv', status=status_filter, priority=priority_filter, q=search_query) }}" class="btn btn-outline">
+                Export CSV
+            </a>
+        </div>
+
+        <div class="table-wrapper">
+            {% if tickets %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Issue</th>
+                            <th>Employee</th>
+                            <th>Category</th>
+                            <th>Severity / Priority</th>
+                            <th>Status &amp; Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                            <tr>
+                                <td><strong>#{{ ticket.ticket_id }}</strong></td>
+                                <td>
+                                    <strong>{{ ticket.title }}</strong>
+                                    <span class="subtext">{{ ticket.description }}</span>
+                                    <span class="subtext">Created: {{ ticket.created_at }}</span>
+                                </td>
+                                <td>
+                                    {{ ticket.employee_name }}
+                                    <span class="subtext">{{ ticket.department }}</span>
+                                    <span class="subtext">{{ ticket.email }}</span>
+                                </td>
+                                <td>
+                                    <strong>{{ ticket.category }}</strong>
+                                    <span class="subtext">Confidence: {{ (ticket.confidence * 100) | round | int }}%</span>
+                                </td>
+                                <td>
+                                    <span class="badge priority-{{ ticket.priority }}">
+                                        {{ ticket.severity }} ({{ ticket.priority }})
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="actions-cell">
+                                        <form method="POST" action="{{ url_for('change_status', ticket_id=ticket.ticket_id) }}">
+                                            <select name="status" class="status-select" onchange="this.form.submit()">
+                                                {% for s in valid_statuses %}
+                                                    <option value="{{ s }}" {% if ticket.status == s %}selected{% endif %}>
+                                                        {{ s }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('remove_ticket', ticket_id=ticket.ticket_id) }}"
+                                              onsubmit="return confirm('Delete ticket #{{ ticket.ticket_id }}?');">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    No tickets match your current filters.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
