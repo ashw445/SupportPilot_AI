@@ -1,0 +1,9 @@
+Employee Name,Email,Department,Title,Description
+Aarav Sinha,aarav@company.com,HR,"VPN not working","Unable to connect to the corporate VPN from home network; receiving authentication timeout errors."
+Priya Varma,priyav@company.com,HR,"Payroll portal access","Cannot log into the HR payroll management portal after recent password reset."
+Sneha Naidu,sneha18@company.com,Engineering,"Git repository permissions","Requesting write access to the production backend repository for upcoming sprint tasks."
+Saran Mathur,saran@company.com,Finance,"Software license expired","Need renewal approval for annual financial modeling and spreadsheet software license."
+Robert Lopes,robert54@gmail.com,Sales,"CRM sync issue","Client contact updates are failing to sync between the mobile app and desktop dashboard."
+Uday Kumar,udkayu86@company.com,Management,"Laptop Failure","Laptop screen remains black on startup with intermittent fan noise; requires hardware diagnostic."
+Arjun Iyer,arj753@company.com,Finance,"Software Issue", "The software that I use on my PC for financial data keeps crashing."
+Bhanu Tikak,bhnu98@company.com,Engineering,"Slow Network", "The internet connection in my room is extremely slow. It is taking like an hour to download all the important data."
