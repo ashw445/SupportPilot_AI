@@ -15,6 +15,10 @@ Support Pilot is an AI-Powered Ticket resolution agent that is created with pyth
 
 ## How to install
 - Clone this repository.
+```bash
+git clone https://github.com/ashw445/SupportPilot_AI/
+cd SupportPilot_AI
+```
 - Install Prerequisites
 
 
